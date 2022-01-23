@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { SearchPanel } from "./search-panel";
 import { List } from "./list";
-import axios from "axios";
-import qs from "qs";
 import { cleanObject } from "utils";
-const apiUrl = process.env.REACT_APP_API_URL;
+import { useHttp } from "utils/http";
 
 export const ProjectListScreen = () => {
   const [params, setParams] = useState({
@@ -13,20 +11,14 @@ export const ProjectListScreen = () => {
   });
   const [users, setUsers] = useState([]);
   const [list, setList] = useState([]);
+  const clientProjects = useHttp();
+  const clientUsers = useHttp();
   //输入框或者下拉框改变时，更改params，同时发送请求获取符合的项目名称，更新list
   useEffect(() => {
     const sendMessage = setTimeout(() => {
-      axios({
-        url: `${apiUrl}/projects?${qs.stringify(cleanObject(params))}`,
-        method: "GET",
-      }).then(
-        (response) => {
-          setList(response.data);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+      clientProjects("projects", { data: cleanObject(params) }).then((list) => {
+        setList(list);
+      });
     }, 500);
     return () => {
       clearTimeout(sendMessage);
@@ -34,17 +26,7 @@ export const ProjectListScreen = () => {
   }, [params]);
   //刚开始的时候获取所有的用户信息
   useEffect(() => {
-    axios({
-      url: `${apiUrl}/users`,
-      method: "GET",
-    }).then(
-      (response) => {
-        setUsers(response.data);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+    clientUsers("users").then(setUsers);
   }, []);
   return (
     <div>

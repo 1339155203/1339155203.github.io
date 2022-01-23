@@ -1,6 +1,8 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 import * as auth from "auth-provider";
 import { User } from "screens/project-list/search-panel";
+import { http } from "utils/http";
+import { useMount } from "utils";
 interface AuthForm {
   username: string;
   password: string;
@@ -17,12 +19,29 @@ const AuthContext = React.createContext<
 >(undefined);
 AuthContext.displayName = "AuthContext";
 
+//登陆以后刷新，使用useMount挂载，通过http去请求token获取user
+const bootstrapUser = async () => {
+  let user = null;
+  const token = auth.getToken();
+  //如果已经登陆。即token存在，那么给user赋值而不是让其为null，导致刷新又得重新登陆
+  if (token) {
+    const data = await http("me", { token });
+    user = data.user;
+  }
+  return user;
+};
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  //point free
+  //把auth-provider中写好的login，register，logout和获取到的user信息通过useContext中的value属性传给所有子组件
   const login = (form: AuthForm) => auth.login(form).then(setUser);
   const register = (form: AuthForm) => auth.register(form).then(setUser);
   const logout = () => auth.logout().then(() => setUser(null));
+
+  useMount(() => {
+    //async函数返回一个 Promise 对象，可以使用then方法添加回调函数，获得的值为函数的返回值
+    bootstrapUser().then(setUser);
+  });
+
   //重点：
   /*
     下面return中必须带有children，相当于
