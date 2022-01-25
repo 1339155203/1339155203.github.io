@@ -1,41 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { SearchPanel } from "./search-panel";
 import { List } from "./list";
-import { cleanObject } from "utils";
-import { useHttp } from "utils/http";
 import styled from "@emotion/styled";
+import { useProjects } from "utils/project";
+import { useUsers } from "utils/user";
+import { Typography } from "antd";
 
 export const ProjectListScreen = () => {
   const [params, setParams] = useState({
     name: "",
     personId: "",
   });
-  const [users, setUsers] = useState([]);
-  const [list, setList] = useState([]);
-  const clientProjects = useHttp();
-  const clientUsers = useHttp();
-  //输入框或者下拉框改变时，更改params，同时发送请求获取符合的项目名称，更新list
-  useEffect(() => {
-    const sendMessage = setTimeout(() => {
-      clientProjects("projects", { data: cleanObject(params) }).then((list) => {
-        setList(list);
-      });
-    }, 500);
-    return () => {
-      clearTimeout(sendMessage);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params]);
-  //刚开始的时候获取所有的用户信息
-  useEffect(() => {
-    clientUsers("users").then(setUsers);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+  const {
+    isLoading,
+    error,
+    data: list /*将获取到的data重命名为list */,
+  } = useProjects(params);
+  const { data: users } = useUsers();
   return (
     <Container>
       <h1>项目列表</h1>
-      <SearchPanel users={users} setParams={setParams} params={params} />
-      <List list={list} users={users} />
+      <SearchPanel users={users || []} setParams={setParams} params={params} />
+      {error ? (
+        <Typography.Text type={"danger"}>{error.message}</Typography.Text>
+      ) : null}
+      <List loading={isLoading} dataSource={list || []} users={users || []} />
     </Container>
   );
 };
