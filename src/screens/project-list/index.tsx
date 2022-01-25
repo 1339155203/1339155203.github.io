@@ -3,6 +3,7 @@ import { SearchPanel } from "./search-panel";
 import { List } from "./list";
 import { cleanObject } from "utils";
 import { useHttp } from "utils/http";
+import styled from "@emotion/styled";
 
 export const ProjectListScreen = () => {
   const [params, setParams] = useState({
@@ -23,15 +24,22 @@ export const ProjectListScreen = () => {
     return () => {
       clearTimeout(sendMessage);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
   //刚开始的时候获取所有的用户信息
   useEffect(() => {
     clientUsers("users").then(setUsers);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <div>
+    <Container>
+      <h1>项目列表</h1>
       <SearchPanel users={users} setParams={setParams} params={params} />
       <List list={list} users={users} />
-    </div>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  padding: 3.2rem;
+`;
