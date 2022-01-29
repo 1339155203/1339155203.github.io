@@ -1,5 +1,10 @@
+import React from "react";
 import styled from "@emotion/styled";
+import { Spin, Typography } from "antd";
+import { DevTools } from "jira-dev-tool";
 //emotion自定义标签，可以在里面传入属性，同时由于是模板字符串，可以${}使用
+
+//Row:用于登陆后界面的自定义标签
 export const Row = styled.div<{
   //这里面是传入的属性
   //？：不存在时就不管，存在时必须为冒号后的类型
@@ -23,3 +28,27 @@ export const Row = styled.div<{
         : undefined};
   }
 `;
+
+const FullPage = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+//登录之后，页面加载时的等待界面
+export const FullPageLoading = () => {
+  return (
+    <FullPage>
+      <Spin size={"large"} />
+    </FullPage>
+  );
+};
+//登录之后出错时的界面
+export const FullPageErrorFallback = ({ error }: { error: Error | null }) => {
+  return (
+    <FullPage>
+      <DevTools />
+      <Typography.Text type={"danger"}>{error?.message}</Typography.Text>
+    </FullPage>
+  );
+};
