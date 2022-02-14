@@ -5,5 +5,5 @@ html {
 }
 
 html body #root .App {
-  min-height: 100vh; /*vw:view height*/
+  min-height: 100vh; /*vw:viewport height*/
 }

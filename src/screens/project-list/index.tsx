@@ -5,6 +5,7 @@ import styled from "@emotion/styled";
 import { useProjects } from "utils/project";
 import { useUsers } from "utils/user";
 import { Typography } from "antd";
+import { useDocumentTitle } from "utils";
 
 export const ProjectListScreen = () => {
   const [params, setParams] = useState({
@@ -18,7 +19,7 @@ export const ProjectListScreen = () => {
     data: list /*将获取到的data重命名为list */,
   } = useProjects(params);
   const { data: users } = useUsers();
-
+  useDocumentTitle("任务列表", false);
   return (
     <Container>
       <h1>项目列表</h1>

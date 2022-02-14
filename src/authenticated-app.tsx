@@ -3,11 +3,13 @@ import { Row } from "components/lib";
 import { useAuth } from "context/auth-context";
 import React from "react";
 import { ProjectListScreen } from "screens/project-list";
+import { ProjectScreen } from "screens/project";
 import { ReactComponent as SoftwareLogo } from "assets/software-logo.svg";
 import { Button, Dropdown, Menu } from "antd";
+import { Route, Routes } from "react-router";
+import { BrowserRouter as Router } from "react-router-dom";
+import { resetRoute } from "utils";
 export const AuthenticatedApp = () => {
-  const { logout, user } = useAuth();
-
   /**两种布局
    * grid 和 flex 各自的应用场景
    * 1. 要考虑，是一维布局 还是 二维布局
@@ -21,36 +23,56 @@ export const AuthenticatedApp = () => {
    */
   return (
     <Container>
-      <Header between={true}>
-        <HeaderLeft gap={true}>
-          <SoftwareLogo width={"18rem"} color={"rgb(38,132,255)"} />
-          <h2>项目</h2>
-          <h2>用户</h2>
-        </HeaderLeft>
-        <HeaderRight>
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item key={"logout"}>
-                  <Button type={"link"} onClick={logout}>
-                    退出登录
-                  </Button>
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button type={"link"} onClick={(e) => e.preventDefault()}>
-              Hi,{user?.name}
-            </Button>
-          </Dropdown>
-        </HeaderRight>
-      </Header>
+      <PageHeader />
       <Main>
-        <ProjectListScreen />
+        <Router>
+          <Routes>
+            <Route path={"/projects"} element={<ProjectListScreen />}></Route>
+            <Route
+              path={"/projects/:projectId/*"}
+              element={<ProjectScreen />}
+            ></Route>
+            {/*下面这个index element用来代替navigate，目前navigate已经不能在routes中使用 */}
+            <Route index element={<ProjectListScreen />} />
+          </Routes>
+        </Router>
       </Main>
     </Container>
   );
 };
+
+const PageHeader = () => {
+  const { logout, user } = useAuth();
+  return (
+    <Header between={true}>
+      <HeaderLeft gap={true}>
+        <Button type={"link"} onClick={resetRoute}>
+          <SoftwareLogo width={"18rem"} color={"rgb(38,132,255)"} />
+        </Button>
+        <h2>项目</h2>
+        <h2>用户</h2>
+      </HeaderLeft>
+      <HeaderRight>
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item key={"logout"}>
+                <Button type={"link"} onClick={logout}>
+                  退出登录
+                </Button>
+              </Menu.Item>
+            </Menu>
+          }
+        >
+          <Button type={"link"} onClick={(e) => e.preventDefault()}>
+            Hi,{user?.name}
+          </Button>
+        </Dropdown>
+      </HeaderRight>
+    </Header>
+  );
+};
+
 //grid布局
 const Container = styled.div`
   display: grid;

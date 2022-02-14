@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = (form: AuthForm) => auth.register(form).then(setUser);
   const logout = () => auth.logout().then(() => setUser(null));
 
+  //初始化
   useMount(() => {
     //async函数返回一个 Promise 对象，可以使用then方法添加回调函数，获得的值为函数的返回值
     run(bootstrapUser());
