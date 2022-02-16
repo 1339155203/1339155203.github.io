@@ -5,19 +5,17 @@ import styled from "@emotion/styled";
 import { useProjects } from "utils/project";
 import { useUsers } from "utils/user";
 import { Typography } from "antd";
-import { useDocumentTitle } from "utils";
+import { useDebounce, useDocumentTitle } from "utils";
+import { useUrlQueryParam } from "utils/url";
 
 export const ProjectListScreen = () => {
-  const [params, setParams] = useState({
-    name: "",
-    personId: "",
-  });
-
+  const [params, setParams] = useUrlQueryParam(["name", "personId"]);
+  const debounceParam = useDebounce(params, 200);
   const {
     isLoading,
     error,
     data: list /*将获取到的data重命名为list */,
-  } = useProjects(params);
+  } = useProjects(debounceParam);
   const { data: users } = useUsers();
   useDocumentTitle("任务列表", false);
   return (
