@@ -10,6 +10,7 @@ import { useMemo } from "react";
 */
 
 export const useUrlQueryParam = <K extends string>(keys: K[]) => {
+  //SearchParams：获取到url  setSearchParam：改变url
   const [SearchParams, setSearchParam] = useSearchParams();
   return [
     useMemo(
@@ -23,11 +24,13 @@ export const useUrlQueryParam = <K extends string>(keys: K[]) => {
       [SearchParams] //当url改变时，就会触发这里
     ),
     (params: Partial<{ [key in K]: unknown }>) => {
+      //cleanObject：取出对象中的undifined等类型
       const o = cleanObject({
+        //Object.fromEntries传入的对象必须带有iterator，之后会将键值对类型转换为对象类型
         ...Object.fromEntries(SearchParams),
         ...params,
       }) as URLSearchParamsInit;
-      return setSearchParam(o);
+      return setSearchParam(o); //用于改变url
     },
   ] as const;
 };

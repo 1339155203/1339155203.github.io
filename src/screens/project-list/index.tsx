@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { SearchPanel } from "./search-panel";
 import { List } from "./list";
 import styled from "@emotion/styled";
@@ -6,18 +6,21 @@ import { useProjects } from "utils/project";
 import { useUsers } from "utils/user";
 import { Typography } from "antd";
 import { useDebounce, useDocumentTitle } from "utils";
-import { useUrlQueryParam } from "utils/url";
+import { useProjectSearchParams } from "./util";
 
 export const ProjectListScreen = () => {
-  const [params, setParams] = useUrlQueryParam(["name", "personId"]);
-  const debounceParam = useDebounce(params, 200);
+  useDocumentTitle("任务列表", false);
+
+  const [params, setParams] = useProjectSearchParams();
   const {
     isLoading,
     error,
     data: list /*将获取到的data重命名为list */,
-  } = useProjects(debounceParam);
+    retry,
+  } = useProjects(useDebounce(params, 200));
+  console.log("retry", retry);
   const { data: users } = useUsers();
-  useDocumentTitle("任务列表", false);
+
   return (
     <Container>
       <h1>项目列表</h1>
@@ -25,7 +28,12 @@ export const ProjectListScreen = () => {
       {error ? (
         <Typography.Text type={"danger"}>{error.message}</Typography.Text>
       ) : null}
-      <List loading={isLoading} dataSource={list || []} users={users || []} />
+      <List
+        refresh={retry}
+        loading={isLoading}
+        dataSource={list || []}
+        users={users || []}
+      />
     </Container>
   );
 };
