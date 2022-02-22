@@ -1,4 +1,4 @@
-import { Button, Card, Divider, Typography } from "antd";
+import { Button, Card, Divider } from "antd";
 import React, { useState } from "react";
 import { LoginScreen } from "unauthenticated-app/login";
 import { RegisterScreen } from "unauthenticated-app/register";
@@ -7,6 +7,7 @@ import logo from "assets/logo.svg";
 import right from "assets/right.svg";
 import left from "assets/left.svg";
 import { useDocumentTitle } from "utils";
+import { ErrorBox } from "components/lib";
 export const UnauthenticatedApp = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -17,9 +18,7 @@ export const UnauthenticatedApp = () => {
       <Backgrount />
       <ShadowCard>
         <Title>{isRegister ? "请注册" : "请登录"}</Title>
-        {error ? (
-          <Typography.Text type={"danger"}>{error.message}</Typography.Text>
-        ) : null}
+        <ErrorBox error={error} />
         {isRegister ? (
           <RegisterScreen onError={setError} />
         ) : (

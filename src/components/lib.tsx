@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Spin, Typography } from "antd";
+import { Button, Spin, Typography } from "antd";
 import { DevTools } from "jira-dev-tool";
 //emotion自定义标签，可以在里面传入属性，同时由于是模板字符串，可以${}使用
 
@@ -48,7 +48,19 @@ export const FullPageErrorFallback = ({ error }: { error: Error | null }) => {
   return (
     <FullPage>
       <DevTools />
-      <Typography.Text type={"danger"}>{error?.message}</Typography.Text>
+      <ErrorBox error={error} />
     </FullPage>
   );
 };
+//类型守卫
+const isError = (value: any): value is Error => value?.message;
+export const ErrorBox = ({ error }: { error: unknown }) => {
+  if (isError(error)) {
+    return <Typography.Text type={"danger"}>{error?.message}</Typography.Text>;
+  }
+  return null;
+};
+
+export const ButtonNoPadding = styled(Button)`
+  padding: 0;
+`;

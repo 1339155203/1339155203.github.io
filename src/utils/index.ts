@@ -59,15 +59,30 @@ export const resetRoute = () => {
   window.location.href = window.location.origin;
 };
 
+//标记组件是否被卸载，如果被卸载的同时还在请求数据，那么数据到了之后将不会展示数据
 export const useMountedRef = () => {
   const mountedRef = useRef(false);
 
   useEffect(() => {
+    //一开始组件挂载时标记为true：组件挂载
     mountedRef.current = true;
     return () => {
+      //被卸载后标记组件false，已被卸载
       mountedRef.current = false;
     };
   });
 
   return mountedRef;
+};
+export const subset = <
+  O extends { [key in string]: unknown },
+  K extends keyof O
+>(
+  obj: O,
+  keys: K[]
+) => {
+  const filteredEntries = Object.entries(obj).filter(([key]) =>
+    keys.includes(key as K)
+  );
+  return Object.fromEntries(filteredEntries) as Pick<O, K>;
 };

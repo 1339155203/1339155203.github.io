@@ -4,36 +4,33 @@ import { List } from "./list";
 import styled from "@emotion/styled";
 import { useProjects } from "utils/project";
 import { useUsers } from "utils/user";
-import { Typography } from "antd";
 import { useDebounce, useDocumentTitle } from "utils";
-import { useProjectSearchParams } from "./util";
+import { useProjectModal, useProjectSearchParams } from "./util";
+import { ButtonNoPadding, ErrorBox, Row } from "components/lib";
 
 export const ProjectListScreen = () => {
   useDocumentTitle("任务列表", false);
-
+  const { open } = useProjectModal();
   const [params, setParams] = useProjectSearchParams();
   const {
     isLoading,
     error,
     data: list /*将获取到的data重命名为list */,
-    retry,
   } = useProjects(useDebounce(params, 200));
-  console.log("retry", retry);
   const { data: users } = useUsers();
 
   return (
     <Container>
-      <h1>项目列表</h1>
+      <Row between={true}>
+        <h1>项目列表</h1>
+        <ButtonNoPadding onClick={open} type={"link"}>
+          创建项目
+        </ButtonNoPadding>
+      </Row>
+
       <SearchPanel users={users || []} setParams={setParams} params={params} />
-      {error ? (
-        <Typography.Text type={"danger"}>{error.message}</Typography.Text>
-      ) : null}
-      <List
-        refresh={retry}
-        loading={isLoading}
-        dataSource={list || []}
-        users={users || []}
-      />
+      <ErrorBox error={error} />
+      <List loading={isLoading} dataSource={list || []} users={users || []} />
     </Container>
   );
 };
