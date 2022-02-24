@@ -11,6 +11,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { resetRoute } from "utils";
 import { ProjectModal } from "screens/project-list/project-modal";
 import { ProjectPopover } from "components/project-popover";
+import { UserPopover } from "components/user-popover";
 export const AuthenticatedApp = () => {
   /**两种布局
    * grid 和 flex 各自的应用场景
@@ -53,7 +54,7 @@ const PageHeader = () => {
           <SoftwareLogo width={"18rem"} color={"rgb(38,132,255)"} />
         </ButtonNoPadding>
         <ProjectPopover />
-        <span>用户</span>
+        <UserPopover />
       </HeaderLeft>
       <HeaderRight>
         <User />
@@ -108,4 +109,7 @@ const Header = styled(Row)`
 const HeaderLeft = styled(Row)``;
 const HeaderRight = styled.div``;
 
-const Main = styled.main``;
+const Main = styled.main`
+  display: flex;
+  overflow: hidden;
+`;

@@ -1,10 +1,11 @@
 import React, { ReactNode } from "react";
 import * as auth from "auth-provider";
-import { User } from "screens/project-list/search-panel";
+import { User } from "types/User";
 import { http } from "utils/http";
 import { useMount } from "utils";
 import { FullPageErrorFallback, FullPageLoading } from "components/lib";
 import { useAsync } from "utils/use-async";
+import { useQueryClient } from "react-query";
 interface AuthForm {
   username: string;
   password: string;
@@ -43,10 +44,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isSuccess,
     run,
   } = useAsync<User | null>();
+  const queryClient = useQueryClient();
   //把auth-provider中写好的login，register，logout和获取到的user信息通过useContext中的value属性传给所有子组件
   const login = (form: AuthForm) => auth.login(form).then(setUser);
   const register = (form: AuthForm) => auth.register(form).then(setUser);
-  const logout = () => auth.logout().then(() => setUser(null));
+  const logout = () =>
+    auth.logout().then(() => {
+      setUser(null);
+      queryClient.clear();
+    });
 
   //初始化
   useMount(() => {
